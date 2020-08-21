@@ -12,4 +12,8 @@ To access H2 database panel (assuming application runs on localhost and 8080 por
 The H2 console access credentials are as per specified in application.properties file
 > http://localhost:8080/h2-console 
 
+ Reports and Analytics files path should be manually configured. 
+ To be stored in <PATH>/reports, <PATH>/monitoring, <PATH>/logs  
+ > TBA
+ 
  
