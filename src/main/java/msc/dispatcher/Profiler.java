@@ -6,17 +6,17 @@ public class Profiler {
 
     private static int BATCH_SIZE = 100;
 
-    public Profiler() { }
+    public Profiler() {}
 
-    public void monitor() throws InterruptedException, IOException {
+    public String getMonitoringDataBatch() throws InterruptedException, IOException {
         File tempScript = bashScriptToRun();
 
         ProcessBuilder pb = new ProcessBuilder("bash", tempScript.toString());
         Process process = pb.start();
-        String output = redirectConsoleOutputToString(process);
+        String profilingData = redirectConsoleOutputToString(process);
         process.waitFor();
         tempScript.delete();
-        System.out.println(output);
+        return profilingData;
     }
 
     private String redirectConsoleOutputToString(Process process) throws IOException {

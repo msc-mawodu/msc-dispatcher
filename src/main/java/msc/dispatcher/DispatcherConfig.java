@@ -8,6 +8,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -16,6 +17,7 @@ import javax.sql.DataSource;
 @Configuration
 @PropertySource({"classpath:application.properties"})
 @EnableTransactionManagement
+@EnableScheduling
 public class DispatcherConfig {
 
     @Autowired
@@ -47,5 +49,10 @@ public class DispatcherConfig {
     @Bean
     FileExplorer fileExplorer() {
         return new FileExplorer();
+    }
+
+    @Bean
+    ProfilerCronJobs cronJobs() {
+        return new ProfilerCronJobs();
     }
 }

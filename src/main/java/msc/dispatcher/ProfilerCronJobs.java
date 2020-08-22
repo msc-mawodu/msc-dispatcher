@@ -9,14 +9,10 @@ public class ProfilerCronJobs {
 
     private Logger logger = LoggerFactory.getLogger(ProfilerCacheStore.class);
 
-    // Every 1 minute
-    @Scheduled(cron = "0 7/1 * * * ?")
-    public void triggerDbClear() {
-        logger.info("Should clear DB");
-    }
+    public ProfilerCronJobs() { }
 
     // Every 1 minute
-    @Scheduled(cron = "0 7/1 * * * ?")
+    @Scheduled(cron = "*/10 * * * * *")
     public void triggerDataDispatch() {
         logger.info("Should dispatch data to external endpoint");
     }

@@ -19,8 +19,6 @@ public class HomeController {
     @GetMapping("/")
     public String index() throws IOException, InterruptedException {
         String listedFiles = fileExplorer.listFiles();
-        Profiler profiler = new Profiler();
-        profiler.monitor();
 
         return listedFiles;
     }
