@@ -7,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
@@ -17,27 +16,24 @@ import static junit.framework.TestCase.assertEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { DispatcherConfig.class }, loader = AnnotationConfigContextLoader.class)
 @Sql(scripts = "classpath:schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class ProfilerStoreTest {
+public class ProfilerCacheStoreTest {
 
     @Autowired
-    ProfilerStore profilerStore;
+    ProfilerCacheStore profilerCacheStore;
 
     @Test
-    public void shouldHandleInsertionAndDeletionCorrectly() throws IOException {
+    public void givenEntryToSave_canSaveItFetchItAndDeleteAfterFetching() {
         String dataFromFile = getStubData();
-        profilerStore.save(dataFromFile);
-        String dataFromDb = profilerStore.fetchAllProfilerEntries();
+        profilerCacheStore.save(dataFromFile);
+        String dataFromDb = profilerCacheStore.fetchAllProfilerEntries();
         assertEquals(dataFromFile, dataFromDb);
-    }
-
-    @Test
-    public void givenExistingEntries_marksAsRetreived() {
-        // fixme: implement
+        // NB after fetching entries should be automatically deleted.
+        String emptyData = profilerCacheStore.fetchAllProfilerEntries();
+        assertEquals("", emptyData);
     }
 
     private String getStubData() {
         InputStream metrics = getClass().getResourceAsStream("/stub-metrics.txt");
-
         Scanner scanner = new Scanner(metrics);
         StringBuffer buffer = new StringBuffer();
         while(scanner.hasNext()){

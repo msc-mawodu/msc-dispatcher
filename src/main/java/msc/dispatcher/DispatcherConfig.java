@@ -39,8 +39,8 @@ public class DispatcherConfig {
     }
 
     @Bean
-    ProfilerStore profilerStore(JdbcTemplate jdbcTemplate) {
-        return new ProfilerStore(jdbcTemplate);
+    ProfilerCacheStore profilerStore(JdbcTemplate jdbcTemplate) {
+        return new ProfilerCacheStore(jdbcTemplate);
     }
 
 

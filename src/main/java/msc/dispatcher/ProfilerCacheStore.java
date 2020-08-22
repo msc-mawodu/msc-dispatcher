@@ -9,15 +9,17 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Transactional
-public class ProfilerStore {
+public class ProfilerCacheStore {
 
-    private Logger logger = LoggerFactory.getLogger(ProfilerStore.class);
+    private Logger logger = LoggerFactory.getLogger(ProfilerCacheStore.class);
     private JdbcTemplate jdbcTemplate;
 
-    public ProfilerStore(JdbcTemplate jdbcTemplate) {
+    public ProfilerCacheStore(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -29,13 +31,19 @@ public class ProfilerStore {
 
     public String fetchAllProfilerEntries() {
         StringBuilder profilerEntries = new StringBuilder();
+        List<Integer> idsToMarkAsRead = new ArrayList<>();
         try {
             Connection jdbc = jdbcTemplate.getDataSource().getConnection();
-            PreparedStatement psSelect = jdbc.prepareStatement("SELECT * from profiling where dispatched=0");
+            PreparedStatement psSelect = jdbc.prepareStatement("SELECT * from profiling");
             ResultSet rows = psSelect.executeQuery();
             while (rows.next()) {
                 profilerEntries.append(rows.getString("metrics"));
+                int id = rows.getInt("id");
+                logger.info("Fetching entry from db: ", id);
+                idsToMarkAsRead.add(id);
             }
+
+            deleteDispatchedEntries(idsToMarkAsRead);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -43,5 +51,13 @@ public class ProfilerStore {
         }
 
         return profilerEntries.toString();
+    }
+
+    private void deleteDispatchedEntries(List<Integer> idsToDelete) {
+        for(Integer id : idsToDelete) {
+            logger.info("Deleting entry from db: ", id);
+
+            jdbcTemplate.update("DELETE FROM profiling WHERE id=?", id);
+        }
     }
 }
