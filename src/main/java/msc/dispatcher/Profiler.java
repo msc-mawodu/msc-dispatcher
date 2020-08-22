@@ -4,11 +4,9 @@ import java.io.*;
 
 public class Profiler {
 
-//    private static String CMD = "watch -n 1 'ps -eo pid,ppid,cmd,%mem,%cpu'";
-
-    // todo: to be used as a separate profiling tool.
-//    private static final String CPU_PROFILE = "mpstat -P ALL 1"; // NB. requires: sudo apt install sysstat
     private static int BATCH_SIZE = 100;
+
+    public Profiler() { }
 
     public void monitor() throws InterruptedException, IOException {
         File tempScript = bashScriptToRun();
@@ -23,25 +21,29 @@ public class Profiler {
 
     private String redirectConsoleOutputToString(Process process) throws IOException {
         BufferedReader consoleBuffer = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        StringBuilder consoleOut = new StringBuilder();
+        StringBuilder consoleOutputBuffer = new StringBuilder();
         String line;
         while ( (line = consoleBuffer.readLine()) != null) {
-            consoleOut.append(line);
-            consoleOut.append(System.getProperty("line.separator"));
+            consoleOutputBuffer.append(line);
+            consoleOutputBuffer.append(System.getProperty("line.separator"));
         }
-        return consoleOut.toString();
+        return consoleOutputBuffer.toString();
     }
 
     private File bashScriptToRun() throws IOException {
+        // todo: to be used as a separate profiling tool.
+        // "watch -n 1 'ps -eo pid,ppid,cmd,%mem,%cpu'";
+        // "mpstat -P ALL 1"; // NB. requires: sudo apt install sysstat
+
         File tempScriptFile = File.createTempFile("script", null);
 
-        Writer streamWriter = new OutputStreamWriter(new FileOutputStream(
-                tempScriptFile));
+        Writer streamWriter = new OutputStreamWriter(new FileOutputStream(tempScriptFile));
         PrintWriter printWriter = new PrintWriter(streamWriter);
 
         printWriter.println("#!/bin/bash");
-        printWriter.println("for((i=1;i<=10;i+=2))");
-        printWriter.println("do ps -af");
+        printWriter.println(String.format("for((i=1;i<=%s;i+=2))", BATCH_SIZE));
+        printWriter.println("do date");
+        printWriter.println("ps -af");
         printWriter.println("sleep 1");
         printWriter.println("done");
 
