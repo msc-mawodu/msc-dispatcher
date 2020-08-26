@@ -61,10 +61,6 @@ public class DispatcherConfig implements SchedulingConfigurer {
         return new StateCacheStore(jdbcTemplate);
     }
 
-    @Bean
-    FileExplorer fileExplorer() {
-        return new FileExplorer();
-    }
 
     @Bean
     Profiler profiler() {
@@ -74,6 +70,11 @@ public class DispatcherConfig implements SchedulingConfigurer {
     @Bean
     DispatcherClient dispatcherClient() {
         return new DispatcherClient();
+    }
+
+    @Bean
+    FileWatcherExecutor fileWatcherExecutor() {
+        return new FileWatcherExecutor();
     }
 
     @Bean
@@ -89,7 +90,7 @@ public class DispatcherConfig implements SchedulingConfigurer {
     }
 
     @Bean
-    ApplicationCronJobs cronJobs(ProfilerExecutor profilerExecutor, DispatcherExecutor dispatcherExecutor) {
-        return new ApplicationCronJobs(profilerExecutor, dispatcherExecutor);
+    ApplicationCronJobs cronJobs(ProfilerExecutor profilerExecutor, DispatcherExecutor dispatcherExecutor, FileWatcherExecutor fileWatcherExecutor) {
+        return new ApplicationCronJobs(profilerExecutor, dispatcherExecutor, fileWatcherExecutor);
     }
 }

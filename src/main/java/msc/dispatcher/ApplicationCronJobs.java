@@ -13,13 +13,15 @@ public class ApplicationCronJobs {
 
     private ProfilerExecutor profilerExecutor;
     private DispatcherExecutor dispatcherExecutor;
+    private FileWatcherExecutor fileWatcherExecutor;
 
-    public ApplicationCronJobs(ProfilerExecutor profilerExecutor, DispatcherExecutor dispatcherExecutor) {
+    public ApplicationCronJobs(ProfilerExecutor profilerExecutor, DispatcherExecutor dispatcherExecutor, FileWatcherExecutor fileWatcherExecutor) {
         this.profilerExecutor = profilerExecutor;
         this.dispatcherExecutor = dispatcherExecutor;
+        this.fileWatcherExecutor = fileWatcherExecutor;
     }
 
-    // Every 1 second
+    // Every 10 seconds
     @Scheduled(cron = "*/10 * * * * *")
     public void triggerDataDispatch() {
         logger.info("Data dispatch initiated.");
@@ -27,7 +29,7 @@ public class ApplicationCronJobs {
         dispatcherExecutorThread.start();
     }
 
-    // Every 2 seconds
+    // Every 15 seconds
     @Scheduled(cron = "*/15 * * * * *")
     public void checkApplicationState() {
         logger.info("Application state check.");
@@ -37,5 +39,13 @@ public class ApplicationCronJobs {
             Thread profilerExecutorThread = new Thread(profilerExecutor);
             profilerExecutorThread.start();
         }
+    }
+
+    // Every 5 seconds
+    @Scheduled(cron = "*/5 * * * * *")
+    public void checkReportFiles() {
+        logger.info("Report files check start.");
+        Thread fileWatcherExecutorThread = new Thread(fileWatcherExecutor);
+        fileWatcherExecutorThread.start();
     }
 }
