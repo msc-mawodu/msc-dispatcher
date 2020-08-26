@@ -13,12 +13,10 @@ public class ProfilerExecutor implements Runnable {
 
     private Profiler profiler;
     private ProfilerCacheStore dataCache;
-    private StateCacheStore stateCache;
 
-    public ProfilerExecutor(Profiler profiler, ProfilerCacheStore dataCache, StateCacheStore stateCache) {
+    public ProfilerExecutor(Profiler profiler, ProfilerCacheStore dataCache) {
         this.profiler = profiler;
         this.dataCache = dataCache;
-        this.stateCache = stateCache;
     }
 
     @Override
@@ -29,26 +27,21 @@ public class ProfilerExecutor implements Runnable {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
-    }
-
-    public void poll() throws ExecutionException, InterruptedException {
-        System.out.println("GATHER ++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-        logger.info("App poll");
-
-        Future<String> profilerData = null;
-        try {
-            profilerData = profiler.getMonitoringDataBatch();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void poll() throws ExecutionException, InterruptedException, IOException {
+        logger.info("Gathering a new batch of performance data.");
+
+        Future<String> profilerData = null;
+        profilerData = profiler.getMonitoringDataBatch();
 
         if (null != profilerData) {
             dataCache.save(profilerData.get());
         }
 
-        poll(); // Recursively call itself, as a main app loop.
+        poll(); // NB. Recursively call itself, as a main app loop.
     }
 }

@@ -66,19 +66,30 @@ public class DispatcherConfig implements SchedulingConfigurer {
         return new FileExplorer();
     }
 
-    @Bean Profiler profiler() {
+    @Bean
+    Profiler profiler() {
         return new Profiler();
     }
 
     @Bean
-    @Autowired
-    public ProfilerExecutor applicationState(Profiler profiler, ProfilerCacheStore dataCache, StateCacheStore stateCache) {
-        return new ProfilerExecutor(profiler, dataCache, stateCache);
+    DispatcherClient dispatcherClient() {
+        return new DispatcherClient();
     }
 
     @Bean
-    ProfilerCronJobs cronJobs(ProfilerExecutor profilerExecutor) {
-//        return new ProfilerCronJobs(dataCache);
-        return new ProfilerCronJobs(profilerExecutor);
+    @Autowired
+    public ProfilerExecutor profilerExecutor(Profiler profiler, ProfilerCacheStore dataCache) {
+        return new ProfilerExecutor(profiler, dataCache);
+    }
+
+    @Bean
+    @Autowired
+    public DispatcherExecutor dispatcherExecutor(ProfilerCacheStore cacheStore, DispatcherClient client) {
+        return new DispatcherExecutor(cacheStore, client);
+    }
+
+    @Bean
+    ProfilerCronJobs cronJobs(ProfilerExecutor profilerExecutor, DispatcherExecutor dispatcherExecutor) {
+        return new ProfilerCronJobs(profilerExecutor, dispatcherExecutor);
     }
 }

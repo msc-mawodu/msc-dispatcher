@@ -9,26 +9,29 @@ public class ProfilerCronJobs {
     private static final Logger logger = LoggerFactory.getLogger(ProfilerCacheStore.class);
     private static boolean isRunning = false;
 
-    private ProfilerExecutor executor;
+    private ProfilerExecutor profilerExecutor;
+    private DispatcherExecutor dispatcherExecutor;
 
-    public ProfilerCronJobs(ProfilerExecutor executor) {
-        this.executor = executor;
+    public ProfilerCronJobs(ProfilerExecutor profilerExecutor, DispatcherExecutor dispatcherExecutor) {
+        this.profilerExecutor = profilerExecutor;
+        this.dispatcherExecutor = dispatcherExecutor;
     }
 
     // Every 1 second
     @Scheduled(cron = "*/1 * * * * *")
     public void triggerDataDispatch() {
-//        String profilingBatchData = cacheStore.fetchAllProfilerEntries();
-        System.out.println("DISPATCH -------------------------------------------------");
-        logger.info("Should dispatch data to external endpoint");
+        logger.info("Data dispatch initiated.");
+        Thread dispatcherExecutorThread = new Thread(dispatcherExecutor);
+        dispatcherExecutorThread.start();
     }
 
+    // Every 2 seconds
     @Scheduled(cron = "*/2 * * * * *")
     public void checkApplicationState() {
-        System.out.println("STATE -------------------------------------------------");
+        logger.info("Application state check.");
         if (!isRunning) {
             isRunning = true;
-            Thread profilerExecutorThread = new Thread(executor);
+            Thread profilerExecutorThread = new Thread(profilerExecutor);
             profilerExecutorThread.start();
         }
     }
