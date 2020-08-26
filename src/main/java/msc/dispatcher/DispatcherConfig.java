@@ -57,6 +57,11 @@ public class DispatcherConfig implements SchedulingConfigurer {
     }
 
     @Bean
+    FilenameCacheStore filenameCacheStore(JdbcTemplate jdbcTemplate) {
+        return new FilenameCacheStore(jdbcTemplate);
+    }
+
+    @Bean
     StateCacheStore stateStore(JdbcTemplate jdbcTemplate) {
         return new StateCacheStore(jdbcTemplate);
     }

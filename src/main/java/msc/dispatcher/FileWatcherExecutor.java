@@ -15,7 +15,7 @@ public class FileWatcherExecutor implements Runnable {
     @Value("${reports_path}")
     private String REPORTS_PATH;
 
-    public FileWatcherExecutor() {}
+    private FilenameCacheStore filenameCacheStore;
 
     @Override
     public void run() {
