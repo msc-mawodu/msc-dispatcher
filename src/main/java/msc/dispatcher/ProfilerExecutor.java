@@ -38,6 +38,10 @@ public class ProfilerExecutor implements Runnable {
         Future<String> profilerData = null;
         profilerData = profiler.getMonitoringDataBatch();
 
+        while(!profilerData.isDone()) {
+            Thread.sleep(500);
+        }
+
         if (null != profilerData) {
             dataCache.save(profilerData.get());
         }

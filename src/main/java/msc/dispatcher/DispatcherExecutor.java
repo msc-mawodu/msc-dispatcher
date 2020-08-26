@@ -19,7 +19,7 @@ public class DispatcherExecutor implements Runnable {
     public void run() {
         logger.info("Dispatching profiling data data.");
         String profilingBatchData = cacheStore.fetchAllProfilerEntries();
-        client.post(profilingBatchData);
+        client.makeGetRequest("mock");
     }
 
 }

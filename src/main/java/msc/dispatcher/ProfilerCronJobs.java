@@ -18,7 +18,7 @@ public class ProfilerCronJobs {
     }
 
     // Every 1 second
-    @Scheduled(cron = "*/1 * * * * *")
+    @Scheduled(cron = "*/10 * * * * *")
     public void triggerDataDispatch() {
         logger.info("Data dispatch initiated.");
         Thread dispatcherExecutorThread = new Thread(dispatcherExecutor);
@@ -26,7 +26,7 @@ public class ProfilerCronJobs {
     }
 
     // Every 2 seconds
-    @Scheduled(cron = "*/2 * * * * *")
+    @Scheduled(cron = "*/15 * * * * *")
     public void checkApplicationState() {
         logger.info("Application state check.");
         if (!isRunning) {

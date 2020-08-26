@@ -40,7 +40,7 @@ public class ProfilerCacheStore {
             while (rows.next()) {
                 profilerEntries.append(rows.getString("metrics"));
                 int id = rows.getInt("id");
-                logger.info("Fetching entry from db: ", id);
+                logger.info(String.format("Fetched entry from db: %s", id));
                 idsToMarkAsRead.add(id);
             }
 
@@ -56,7 +56,7 @@ public class ProfilerCacheStore {
 
     private void deleteDispatchedEntries(List<Integer> idsToDelete) {
         for(Integer id : idsToDelete) {
-            logger.info("Deleting entry from db: ", id);
+            logger.info(String.format("Deleting entry from db: %s", id));
 
             jdbcTemplate.update("DELETE FROM profiling WHERE id=?", id);
         }
