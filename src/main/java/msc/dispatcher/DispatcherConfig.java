@@ -89,7 +89,7 @@ public class DispatcherConfig implements SchedulingConfigurer {
     }
 
     @Bean
-    ProfilerCronJobs cronJobs(ProfilerExecutor profilerExecutor, DispatcherExecutor dispatcherExecutor) {
-        return new ProfilerCronJobs(profilerExecutor, dispatcherExecutor);
+    ApplicationCronJobs cronJobs(ProfilerExecutor profilerExecutor, DispatcherExecutor dispatcherExecutor) {
+        return new ApplicationCronJobs(profilerExecutor, dispatcherExecutor);
     }
 }

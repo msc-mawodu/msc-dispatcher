@@ -1,18 +1,14 @@
 package msc.dispatcher;
 
-import javax.servlet.ServletContext;
 import java.io.File;
 
 public class FileExplorer {
 
-    private ServletContext servletContext;
-
-    // TODO: this will come from a configuration file.
     private static String ROOT_PATH = "/Users/mwd/Desktop/Computer_Science/MSC_PROJECT/dissertation/";
 
     public FileExplorer() {}
 
-    public String listFiles() {
+    public String listFilesAndFolders() {
 
         File rootFolder = new File(ROOT_PATH);
 

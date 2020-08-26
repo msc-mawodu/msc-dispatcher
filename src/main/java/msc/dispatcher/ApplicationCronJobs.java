@@ -4,7 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 
-public class ProfilerCronJobs {
+import static msc.dispatcher.DispatcherApplication.keepGatheringProfilingData;
+
+public class ApplicationCronJobs {
 
     private static final Logger logger = LoggerFactory.getLogger(ProfilerCacheStore.class);
     private static boolean isRunning = false;
@@ -12,7 +14,7 @@ public class ProfilerCronJobs {
     private ProfilerExecutor profilerExecutor;
     private DispatcherExecutor dispatcherExecutor;
 
-    public ProfilerCronJobs(ProfilerExecutor profilerExecutor, DispatcherExecutor dispatcherExecutor) {
+    public ApplicationCronJobs(ProfilerExecutor profilerExecutor, DispatcherExecutor dispatcherExecutor) {
         this.profilerExecutor = profilerExecutor;
         this.dispatcherExecutor = dispatcherExecutor;
     }
@@ -31,6 +33,7 @@ public class ProfilerCronJobs {
         logger.info("Application state check.");
         if (!isRunning) {
             isRunning = true;
+            keepGatheringProfilingData = true;
             Thread profilerExecutorThread = new Thread(profilerExecutor);
             profilerExecutorThread.start();
         }

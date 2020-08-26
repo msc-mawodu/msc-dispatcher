@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import static msc.dispatcher.DispatcherApplication.keepGatheringProfilingData;
+
 public class ProfilerExecutor implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(ProfilerExecutor.class);
@@ -22,7 +24,7 @@ public class ProfilerExecutor implements Runnable {
     @Override
     public void run() {
         try {
-            this.poll();
+            this.continuouslyGatherPerformanceMetrics();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -32,20 +34,20 @@ public class ProfilerExecutor implements Runnable {
         }
     }
 
-    private void poll() throws ExecutionException, InterruptedException, IOException {
-        logger.info("Gathering a new batch of performance data.");
+    private void continuouslyGatherPerformanceMetrics() throws ExecutionException, InterruptedException, IOException {
+        while(keepGatheringProfilingData) {
+            logger.info("Gathering a new batch of performance data.");
 
-        Future<String> profilerData = null;
-        profilerData = profiler.getMonitoringDataBatch();
+            Future<String> profilerData = null;
+            profilerData = profiler.getMonitoringDataBatch();
 
-        while(!profilerData.isDone()) {
-            Thread.sleep(500);
+            while(!profilerData.isDone()) {
+                Thread.sleep(500);
+            }
+
+            if (null != profilerData) {
+                dataCache.save(profilerData.get());
+            }
         }
-
-        if (null != profilerData) {
-            dataCache.save(profilerData.get());
-        }
-
-        poll(); // NB. Recursively call itself, as a main app loop.
     }
 }
