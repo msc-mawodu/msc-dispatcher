@@ -24,6 +24,7 @@ public class ProfilerCacheStore {
     }
 
     public void save(String profilerData) {
+        logger.info("Saving profiling data batch.");
         jdbcTemplate.update("INSERT INTO profiling(metrics) VALUES (?)",
                 profilerData
         );

@@ -1,14 +1,24 @@
 package msc.dispatcher;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.AsyncResult;
+
 import java.io.*;
+import java.util.concurrent.Future;
 
 public class Profiler {
 
-    private static int BATCH_SIZE = 100;
+    private static final Logger logger = LoggerFactory.getLogger(Profiler.class);
+
+    private static int BATCH_SIZE = 15;
 
     public Profiler() {}
 
-    public String getMonitoringDataBatch() throws InterruptedException, IOException {
+    public Future<String> getMonitoringDataBatch() throws InterruptedException, IOException {
+
+        logger.info("Attempting to gather performance data");
+
         File tempScript = bashScriptToRun();
 
         ProcessBuilder pb = new ProcessBuilder("bash", tempScript.toString());
@@ -16,7 +26,7 @@ public class Profiler {
         String profilingData = redirectConsoleOutputToString(process);
         process.waitFor();
         tempScript.delete();
-        return profilingData;
+        return new AsyncResult<>(profilingData);
     }
 
     private String redirectConsoleOutputToString(Process process) throws IOException {
