@@ -1,5 +1,6 @@
 package msc.dispatcher;
 
+import msc.dispatcher.state.StateClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -78,6 +79,11 @@ public class DispatcherConfig implements SchedulingConfigurer {
     }
 
     @Bean
+    StateClient stateClient() {
+        return new StateClient();
+    }
+
+    @Bean
     FileWatcherExecutor fileWatcherExecutor() {
         return new FileWatcherExecutor();
     }
@@ -95,7 +101,13 @@ public class DispatcherConfig implements SchedulingConfigurer {
     }
 
     @Bean
-    ApplicationCronJobs cronJobs(ProfilerExecutor profilerExecutor, DispatcherExecutor dispatcherExecutor, FileWatcherExecutor fileWatcherExecutor) {
-        return new ApplicationCronJobs(profilerExecutor, dispatcherExecutor, fileWatcherExecutor);
+    @Autowired
+    public StateReporterExecutor stateReporterExecutor(StateClient client) {
+        return new StateReporterExecutor(client);
+    }
+
+    @Bean
+    Scheduler scheduler(ProfilerExecutor profilerExecutor, DispatcherExecutor dispatcherExecutor, FileWatcherExecutor fileWatcherExecutor, StateReporterExecutor stateReporterExecutor) {
+        return new Scheduler(profilerExecutor, dispatcherExecutor, fileWatcherExecutor, stateReporterExecutor);
     }
 }

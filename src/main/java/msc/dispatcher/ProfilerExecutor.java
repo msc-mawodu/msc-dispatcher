@@ -1,5 +1,6 @@
 package msc.dispatcher;
 
+import msc.dispatcher.state.ApplicationState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,7 +8,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static msc.dispatcher.DispatcherApplication.keepGatheringProfilingData;
+import static msc.dispatcher.DispatcherApplication.applicationState;
 
 public class ProfilerExecutor implements Runnable {
 
@@ -35,7 +36,7 @@ public class ProfilerExecutor implements Runnable {
     }
 
     private void continuouslyGatherPerformanceMetrics() throws ExecutionException, InterruptedException, IOException {
-        while(keepGatheringProfilingData) {
+        while(applicationState.equals(ApplicationState.RUNNING)) {
             logger.info("Gathering a new batch of performance data.");
 
             Future<String> profilerData = null;
