@@ -16,5 +16,6 @@ CREATE TABLE profiling (
 CREATE TABLE filename (
   id INT AUTO_INCREMENT,
   path VARCHAR(500) PRIMARY KEY,
+  dispatched bit default 0,
   timeUpdated date
 );

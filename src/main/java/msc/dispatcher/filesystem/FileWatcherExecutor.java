@@ -1,4 +1,4 @@
-package msc.dispatcher;
+package msc.dispatcher.filesystem;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,15 +12,20 @@ public class FileWatcherExecutor implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(FileWatcherExecutor.class);
 
-    @Value("${reports_path}")
+    @Value("${application_reports_path}")
     private String REPORTS_PATH;
 
     private FilenameCacheStore filenameCacheStore;
+
+    public FileWatcherExecutor(FilenameCacheStore filenameCacheStore) {
+        this.filenameCacheStore = filenameCacheStore;
+    }
 
     @Override
     public void run() {
         logger.info(String.format("Report files check executing @%s", Thread.currentThread().getName()));
         List<String> files = listFilesAndFolders();
+        filenameCacheStore.save(files);
     }
 
     private List<String> listFilesAndFolders() {

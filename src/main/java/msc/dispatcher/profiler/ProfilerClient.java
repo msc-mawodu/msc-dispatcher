@@ -14,6 +14,9 @@ public class ProfilerClient {
 
     private static final Logger logger = LoggerFactory.getLogger(ProfilerClient.class);
 
+    @Value("${application_id}")
+    private String APP_ID;
+
     @Value("${hub_domain}")
     private String HUB_DOMAIN;
 
@@ -40,6 +43,7 @@ public class ProfilerClient {
         RestTemplate restTemplate = new RestTemplate();
 
         Map<String, String> map = new HashMap<>();
+        map.put("id", APP_ID);
         map.put("ps-data", data);
 
         ResponseEntity<Void> response = restTemplate.postForEntity(url, map, Void.class);

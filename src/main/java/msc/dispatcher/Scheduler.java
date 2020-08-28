@@ -1,5 +1,7 @@
 package msc.dispatcher;
 
+import msc.dispatcher.filesystem.FileDispatcherExecutor;
+import msc.dispatcher.filesystem.FileWatcherExecutor;
 import msc.dispatcher.profiler.ProfilerDispatcherExecutor;
 import msc.dispatcher.profiler.ProfilerGathererExecutor;
 import msc.dispatcher.state.ApplicationState;
@@ -19,12 +21,14 @@ public class Scheduler {
     private ProfilerDispatcherExecutor profilerDispatcherExecutor;
     private FileWatcherExecutor fileWatcherExecutor;
     private StateReporterExecutor stateReporterExecutor;
+    private FileDispatcherExecutor fileDispatcherExecutor;
 
-    public Scheduler(ProfilerGathererExecutor profilerGathererExecutor, ProfilerDispatcherExecutor profilerDispatcherExecutor, FileWatcherExecutor fileWatcherExecutor, StateReporterExecutor stateReporterExecutor) {
+    public Scheduler(ProfilerGathererExecutor profilerGathererExecutor, ProfilerDispatcherExecutor profilerDispatcherExecutor, FileWatcherExecutor fileWatcherExecutor, StateReporterExecutor stateReporterExecutor, FileDispatcherExecutor fileDispatcherExecutor) {
         this.profilerGathererExecutor = profilerGathererExecutor;
         this.profilerDispatcherExecutor = profilerDispatcherExecutor;
         this.fileWatcherExecutor = fileWatcherExecutor;
         this.stateReporterExecutor = stateReporterExecutor;
+        this.fileDispatcherExecutor = fileDispatcherExecutor;
     }
     // Every 5 seconds
     @Scheduled(cron = "*/5 * * * * *")
@@ -32,18 +36,18 @@ public class Scheduler {
         logger.info(String.format("App currently is %s, and performance batch runner is set to: %s", applicationState.toString(), isRunning));
     }
 
-    // Every 10 seconds
-    @Scheduled(cron = "*/10 * * * * *")
+    // Every 30 seconds
+    @Scheduled(cron = "*/30 * * * * *")
     public void triggerDataDispatch() {
         if (applicationState.equals(ApplicationState.RUNNING)) {
             logger.info("Data dispatch initiated.");
-            Thread dispatcherExecutorThread = new Thread(profilerGathererExecutor);
+            Thread dispatcherExecutorThread = new Thread(profilerDispatcherExecutor);
             dispatcherExecutorThread.start();
         }
     }
 
-    // Every 15 seconds
-    @Scheduled(cron = "*/15 * * * * *")
+    // Every 30 seconds
+    @Scheduled(cron = "*/30 * * * * *")
     public void checkPerformanceMonitorTriggering() {
         if (applicationState.equals(ApplicationState.RUNNING)) {
             if (!isRunning) {
@@ -57,8 +61,8 @@ public class Scheduler {
         }
     }
 
-    // Every 20 seconds
-    @Scheduled(cron = "*/20 * * * * *")
+    // Every 5 seconds
+    @Scheduled(cron = "*/5 * * * * *")
     public void triggerFileWatcher() {
         if (applicationState.equals(ApplicationState.RUNNING)) {
             logger.info("Report files check start.");
@@ -67,8 +71,18 @@ public class Scheduler {
         }
     }
 
-    // Every 5 seconds
-    @Scheduled(cron = "*/5 * * * * *")
+    // Every 10 seconds
+    @Scheduled(cron = "*/10 * * * * *")
+    public void triggerFileDispatch() {
+        if (applicationState.equals(ApplicationState.RUNNING)) {
+            logger.info("Dispatch undispatched files to the hub.");
+            Thread fileDispatcherExecutorThread = new Thread(fileDispatcherExecutor);
+            fileDispatcherExecutorThread.start();
+        }
+    }
+
+    // Every 30 seconds
+    @Scheduled(cron = "*/30 * * * * *")
     public void triggerStatusReportDispatch() {
         logger.info("Pinging hub server with application status.");
         Thread stateReporterExecutorThread = new Thread(stateReporterExecutor);

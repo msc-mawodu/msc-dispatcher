@@ -1,5 +1,9 @@
 package msc.dispatcher;
 
+import msc.dispatcher.filesystem.FileDispatcherExecutor;
+import msc.dispatcher.filesystem.FileWatcherExecutor;
+import msc.dispatcher.filesystem.FilenameCacheStore;
+import msc.dispatcher.filesystem.FilesystemClient;
 import msc.dispatcher.profiler.*;
 import msc.dispatcher.state.StateClient;
 import msc.dispatcher.state.StateReporterExecutor;
@@ -80,8 +84,13 @@ public class DispatcherConfig implements SchedulingConfigurer {
     }
 
     @Bean
-    FileWatcherExecutor fileWatcherExecutor() {
-        return new FileWatcherExecutor();
+    FilesystemClient client() {
+        return new FilesystemClient();
+    }
+
+    @Bean
+    FileWatcherExecutor fileWatcherExecutor(FilenameCacheStore filenameCacheStore) {
+        return new FileWatcherExecutor(filenameCacheStore);
     }
 
     @Bean
@@ -103,7 +112,13 @@ public class DispatcherConfig implements SchedulingConfigurer {
     }
 
     @Bean
-    Scheduler scheduler(ProfilerGathererExecutor profilerGathererExecutor, ProfilerDispatcherExecutor dispatcherExecutor, FileWatcherExecutor fileWatcherExecutor, StateReporterExecutor stateReporterExecutor) {
-        return new Scheduler(profilerGathererExecutor, dispatcherExecutor, fileWatcherExecutor, stateReporterExecutor);
+    @Autowired
+    public FileDispatcherExecutor fileDispatcherExecutor(FilenameCacheStore filenameCacheStore, FilesystemClient client) {
+        return new FileDispatcherExecutor(filenameCacheStore, client);
+    }
+
+    @Bean
+    Scheduler scheduler(ProfilerGathererExecutor profilerGathererExecutor, ProfilerDispatcherExecutor dispatcherExecutor, FileWatcherExecutor fileWatcherExecutor, StateReporterExecutor stateReporterExecutor, FileDispatcherExecutor fileDispatcherExecutor) {
+        return new Scheduler(profilerGathererExecutor, dispatcherExecutor, fileWatcherExecutor, stateReporterExecutor, fileDispatcherExecutor);
     }
 }

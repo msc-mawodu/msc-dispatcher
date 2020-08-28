@@ -1,4 +1,4 @@
-package msc.dispatcher;
+package msc.dispatcher.filesystem;
 
 
 import org.slf4j.Logger;
@@ -66,5 +66,46 @@ public class FilenameCacheStore {
         }
 
         return filenames;
+    }
+
+    public List<String> fetchAllUndispatched() {
+        List<String> filenames = new ArrayList<>();
+        try {
+            Connection jdbc = jdbcTemplate.getDataSource().getConnection();
+            PreparedStatement psSelect = jdbc.prepareStatement("SELECT * from filename WHERE dispatched=0");
+            ResultSet rows = psSelect.executeQuery();
+            while (rows.next()) {
+                String path = rows.getString("path");
+                filenames.add(path);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // handle...
+        }
+
+        return filenames;
+    }
+
+    public void markAsDispatched(List<String> dispatchedFiles) {
+
+        List<String> existingFiles = fetchAll();
+        List<String> dispatchedFilesChecked = dispatchedFiles.stream().filter(f -> existingFiles.contains(f)).collect(Collectors.toList());
+
+        jdbcTemplate.batchUpdate("UPDATE filename set dispatched=? WHERE path=?", new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i)
+                    throws SQLException {
+
+                String filename = dispatchedFilesChecked.get(i);
+                ps.setString(2, filename);
+                ps.setInt(1, 1);
+            }
+
+            @Override
+            public int getBatchSize() {
+                return dispatchedFilesChecked.size();
+            }
+        });
     }
 }

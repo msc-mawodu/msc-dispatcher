@@ -1,6 +1,7 @@
 package msc.dispatcher;
 
 
+import msc.dispatcher.filesystem.FilenameCacheStore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -45,5 +47,16 @@ public class FilenameCacheStoreTest {
         for(String path : newFilenamesToSave) {
             assertTrue(retreivedFilenames.contains(path));
         }
+    }
+
+    @Test
+    public void givenEntrySet_canMarkAsDispatched() {
+        List<String> filenamesToSave = Arrays.asList("File1", "File2", "File3");
+        List<String> filenamesToDispatch = Arrays.asList("File1", "File3");
+
+        cacheStore.save(filenamesToSave);
+        cacheStore.markAsDispatched(filenamesToDispatch);
+        List<String> undispatchedFiles = cacheStore.fetchAllUndispatched();
+        assertEquals("File2", undispatchedFiles.get(0));
     }
 }
