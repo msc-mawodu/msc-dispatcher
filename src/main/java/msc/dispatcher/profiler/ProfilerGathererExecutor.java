@@ -1,4 +1,4 @@
-package msc.dispatcher;
+package msc.dispatcher.profiler;
 
 import msc.dispatcher.state.ApplicationState;
 import org.slf4j.Logger;
@@ -10,14 +10,14 @@ import java.util.concurrent.Future;
 
 import static msc.dispatcher.DispatcherApplication.applicationState;
 
-public class ProfilerExecutor implements Runnable {
+public class ProfilerGathererExecutor implements Runnable {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProfilerExecutor.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProfilerGathererExecutor.class);
 
     private Profiler profiler;
     private ProfilerCacheStore dataCache;
 
-    public ProfilerExecutor(Profiler profiler, ProfilerCacheStore dataCache) {
+    public ProfilerGathererExecutor(Profiler profiler, ProfilerCacheStore dataCache) {
         this.profiler = profiler;
         this.dataCache = dataCache;
     }

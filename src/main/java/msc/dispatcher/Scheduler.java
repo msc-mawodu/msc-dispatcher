@@ -1,6 +1,9 @@
 package msc.dispatcher;
 
+import msc.dispatcher.profiler.ProfilerDispatcherExecutor;
+import msc.dispatcher.profiler.ProfilerGathererExecutor;
 import msc.dispatcher.state.ApplicationState;
+import msc.dispatcher.state.StateReporterExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -9,17 +12,17 @@ import static msc.dispatcher.DispatcherApplication.applicationState;
 
 public class Scheduler {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProfilerCacheStore.class);
+    private static final Logger logger = LoggerFactory.getLogger(Scheduler.class);
     private static boolean isRunning = false;
 
-    private ProfilerExecutor profilerExecutor;
-    private DispatcherExecutor dispatcherExecutor;
+    private ProfilerGathererExecutor profilerGathererExecutor;
+    private ProfilerDispatcherExecutor profilerDispatcherExecutor;
     private FileWatcherExecutor fileWatcherExecutor;
     private StateReporterExecutor stateReporterExecutor;
 
-    public Scheduler(ProfilerExecutor profilerExecutor, DispatcherExecutor dispatcherExecutor, FileWatcherExecutor fileWatcherExecutor, StateReporterExecutor stateReporterExecutor) {
-        this.profilerExecutor = profilerExecutor;
-        this.dispatcherExecutor = dispatcherExecutor;
+    public Scheduler(ProfilerGathererExecutor profilerGathererExecutor, ProfilerDispatcherExecutor profilerDispatcherExecutor, FileWatcherExecutor fileWatcherExecutor, StateReporterExecutor stateReporterExecutor) {
+        this.profilerGathererExecutor = profilerGathererExecutor;
+        this.profilerDispatcherExecutor = profilerDispatcherExecutor;
         this.fileWatcherExecutor = fileWatcherExecutor;
         this.stateReporterExecutor = stateReporterExecutor;
     }
@@ -34,7 +37,7 @@ public class Scheduler {
     public void triggerDataDispatch() {
         if (applicationState.equals(ApplicationState.RUNNING)) {
             logger.info("Data dispatch initiated.");
-            Thread dispatcherExecutorThread = new Thread(dispatcherExecutor);
+            Thread dispatcherExecutorThread = new Thread(profilerGathererExecutor);
             dispatcherExecutorThread.start();
         }
     }
@@ -46,7 +49,7 @@ public class Scheduler {
             if (!isRunning) {
                 logger.info("Initiating performance data collection.");
                 isRunning = true;
-                Thread profilerExecutorThread = new Thread(profilerExecutor);
+                Thread profilerExecutorThread = new Thread(profilerGathererExecutor);
                 profilerExecutorThread.start();
             }
         } else {

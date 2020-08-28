@@ -1,16 +1,16 @@
-package msc.dispatcher;
+package msc.dispatcher.profiler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DispatcherExecutor implements Runnable {
+public class ProfilerDispatcherExecutor implements Runnable {
 
-    private static final Logger logger = LoggerFactory.getLogger(DispatcherExecutor.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProfilerDispatcherExecutor.class);
 
     ProfilerCacheStore cacheStore;
-    DispatcherClient client;
+    ProfilerClient client;
 
-    public DispatcherExecutor(ProfilerCacheStore cacheStore, DispatcherClient client) {
+    public ProfilerDispatcherExecutor(ProfilerCacheStore cacheStore, ProfilerClient client) {
         this.cacheStore = cacheStore;
         this.client = client;
     }

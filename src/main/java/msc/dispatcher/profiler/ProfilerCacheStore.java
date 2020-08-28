@@ -1,4 +1,4 @@
-package msc.dispatcher;
+package msc.dispatcher.profiler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

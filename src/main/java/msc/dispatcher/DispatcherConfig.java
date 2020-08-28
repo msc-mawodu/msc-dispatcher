@@ -1,6 +1,8 @@
 package msc.dispatcher;
 
+import msc.dispatcher.profiler.*;
 import msc.dispatcher.state.StateClient;
+import msc.dispatcher.state.StateReporterExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -63,19 +65,13 @@ public class DispatcherConfig implements SchedulingConfigurer {
     }
 
     @Bean
-    StateCacheStore stateStore(JdbcTemplate jdbcTemplate) {
-        return new StateCacheStore(jdbcTemplate);
-    }
-
-
-    @Bean
     Profiler profiler() {
         return new Profiler();
     }
 
     @Bean
-    DispatcherClient dispatcherClient() {
-        return new DispatcherClient();
+    ProfilerClient dispatcherClient() {
+        return new ProfilerClient();
     }
 
     @Bean
@@ -90,14 +86,14 @@ public class DispatcherConfig implements SchedulingConfigurer {
 
     @Bean
     @Autowired
-    public ProfilerExecutor profilerExecutor(Profiler profiler, ProfilerCacheStore dataCache) {
-        return new ProfilerExecutor(profiler, dataCache);
+    public ProfilerGathererExecutor profilerExecutor(Profiler profiler, ProfilerCacheStore dataCache) {
+        return new ProfilerGathererExecutor(profiler, dataCache);
     }
 
     @Bean
     @Autowired
-    public DispatcherExecutor dispatcherExecutor(ProfilerCacheStore cacheStore, DispatcherClient client) {
-        return new DispatcherExecutor(cacheStore, client);
+    public ProfilerDispatcherExecutor dispatcherExecutor(ProfilerCacheStore cacheStore, ProfilerClient client) {
+        return new ProfilerDispatcherExecutor(cacheStore, client);
     }
 
     @Bean
@@ -107,7 +103,7 @@ public class DispatcherConfig implements SchedulingConfigurer {
     }
 
     @Bean
-    Scheduler scheduler(ProfilerExecutor profilerExecutor, DispatcherExecutor dispatcherExecutor, FileWatcherExecutor fileWatcherExecutor, StateReporterExecutor stateReporterExecutor) {
-        return new Scheduler(profilerExecutor, dispatcherExecutor, fileWatcherExecutor, stateReporterExecutor);
+    Scheduler scheduler(ProfilerGathererExecutor profilerGathererExecutor, ProfilerDispatcherExecutor dispatcherExecutor, FileWatcherExecutor fileWatcherExecutor, StateReporterExecutor stateReporterExecutor) {
+        return new Scheduler(profilerGathererExecutor, dispatcherExecutor, fileWatcherExecutor, stateReporterExecutor);
     }
 }

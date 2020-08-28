@@ -1,4 +1,4 @@
-package msc.dispatcher;
+package msc.dispatcher.endpoints;
 
 
 import org.slf4j.Logger;

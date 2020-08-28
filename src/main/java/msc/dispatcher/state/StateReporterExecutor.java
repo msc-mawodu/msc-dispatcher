@@ -1,6 +1,4 @@
-package msc.dispatcher;
-
-import msc.dispatcher.state.StateClient;
+package msc.dispatcher.state;
 
 public class StateReporterExecutor implements Runnable {
 

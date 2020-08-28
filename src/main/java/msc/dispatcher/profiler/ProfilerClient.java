@@ -1,4 +1,4 @@
-package msc.dispatcher;
+package msc.dispatcher.profiler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,9 +10,9 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DispatcherClient {
+public class ProfilerClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(DispatcherClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProfilerClient.class);
 
     @Value("${hub_domain}")
     private String HUB_DOMAIN;
@@ -21,7 +21,7 @@ public class DispatcherClient {
     private String HUB_PROFILING_ENDPOINT;
 
 
-    public DispatcherClient() {}
+    public ProfilerClient() {}
 
     public String makeGetRequest(String requestEndpoint)  {
 
