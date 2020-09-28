@@ -28,9 +28,6 @@ public class StateClient {
     @Value("${application_ip}")
     private String APP_IP;
 
-    @Value("${application_name}")
-    private String APP_NAME;
-
     @Value("${application_description}")
     private String APP_DESCRIPTION;
 
@@ -58,7 +55,6 @@ public class StateClient {
         map.put("id", APP_ID);
         map.put("state", applicationState.toString());
         map.put("ip", APP_IP);
-        map.put("name", APP_NAME);
         map.put("description", APP_DESCRIPTION);
 
         ResponseEntity<Void> response = restTemplate.postForEntity(url, map, Void.class);
